@@ -1,0 +1,29 @@
+version: '3.3'
+services:
+
+  front:
+    build: ./app
+    ports:
+      - "3000:3000"
+    depends_on: 
+      - server
+          
+  server:
+    build: ./server
+    ports:
+      - "8080:8080"
+    depends_on: 
+      - db
+      
+  db:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: 'cinema_db'
+      MYSQL_USER: 'root'
+      MYSQL_ROOT_PASSWORD: 'root'
+    volumes:
+      - ./mysql
+
+volumes:
+  my-db:

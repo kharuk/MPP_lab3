@@ -1,0 +1,30 @@
+{
+  "header": {
+    "filmList": "Film List",
+    "cinemaList": "Cinema List",
+    "sessionList": "Sessions"
+  },
+  "headerItems": {
+    "filmList": [
+      "#",
+      "Name",
+      "Desctiprion",
+      "Director",
+      ""
+    ],
+    "cinemaList": [
+      "#",
+      "Name",
+      "Phone",
+      "Address",
+      ""
+    ],
+    "sessionList": [
+      "#",
+      "Cinema",
+      "Film",
+      "Date",
+      ""
+    ]
+  }
+}
