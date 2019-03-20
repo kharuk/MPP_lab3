@@ -15,5 +15,5 @@ function error(message) {
 }
 
 function clear() {
-    return { type: alertConstants.CLEAR };
+    return {  type: alertConstants.CLEAR };
 }

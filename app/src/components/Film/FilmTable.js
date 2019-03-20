@@ -12,9 +12,20 @@ class FilmTable extends Component {
     };
   }
 
+  getCookie = (name) => {
+    var matches = document.cookie.match(new RegExp(
+      "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+  }
+
   componentDidMount(){
+    let token = JSON.parse(window.localStorage.getItem('user'));
+/*     let t = this.getCookie('token');
+    console.log('qwerty', t); */
+    var headers = { Authorization: token.data.token };
     console.log('here');
-    axios.get(`http://localhost:8080/films`)
+    axios.get('http://localhost:8080/films', { headers: headers})
       .then(response => {
         console.log(response);
         this.setState({ items: response.data });

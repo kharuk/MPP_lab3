@@ -6,17 +6,18 @@ var bcrypt = require('bcryptjs');
 function loginUser(req, res) {
   User.findOne({ where: {email: req.body.email} })
     .then(user => {
-      if (!user) return res.status(404).send('No user found.');
+      if (!user) return res.status(404).send({message: 'No user found.'});
 
       let isPasswordValid = bcrypt.compareSync(req.body.password, user.password); 
       if (!isPasswordValid){
-        return res.status(401).send({ auth: false, token: null });
+        return res.status(401).send({message: "Invalid login or password", auth: false, token: null });
       } 
 
       let token = jwt.sign({ id: user.id }, config.secret, {
         expiresIn: 86400 // expires in 24 hours
       });
-      res.status(200).send({ auth: true, token: token });
+     // res.cookie('token', token, {httpOnly: true});
+      res.status(200).cookie('token', token, {httpOnly: true}).send({ auth: true, token: token });
     })
     .catch(err => res.status(500).send(err))
 }

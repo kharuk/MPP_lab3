@@ -13,8 +13,9 @@ class CinemaTable extends Component {
   }
 
   componentDidMount(){
-    console.log('here');
-    axios.get(`http://localhost:8080/cinemas`)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.get(`http://localhost:8080/cinemas`, { headers: headers})
       .then(response => {
         console.log(response);
         this.setState({ items: response.data });

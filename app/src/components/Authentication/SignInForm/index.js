@@ -5,6 +5,7 @@ import '../styles/login.scss';
 import Header from '../Header';
 import { userActions } from '../../../actions';
 import { connect } from 'react-redux';
+import { ValidationForm} from "react-bootstrap4-form-validation"; 
 
 class SignInForm extends Component {
 
@@ -24,6 +25,7 @@ class SignInForm extends Component {
     handleChange = (e) => { 
         const { name, value } = e.target;
         this.setState({ [name]: value });
+        
     }
 
     handleSubmit = (e) => {
@@ -43,8 +45,25 @@ class SignInForm extends Component {
         <div className="authentication__form-wrapper">
           <Header header={'Sign In Form'}/>
           <form onSubmit={this.handleSubmit} className='authentication__form-content'>
-            <Input name="username" type={'text'} placeholder={'User Name'} onChange={this.handleChange}/>
-            <Input name="password" type={'password'} placeholder={'Password'} onChange={this.handleChange}/>
+            <Input 
+            name="username" 
+            type={'email'} 
+            placeholder={'User Name'} 
+            onChange={this.handleChange}
+            caption={"Email is required"}
+            submitted={submitted}
+            param={username}
+            />
+
+            <Input 
+              name="password" 
+              type={'password'} 
+              placeholder={'Password'} 
+              onChange={this.handleChange}
+              caption={"Password is required"}
+              submitted={submitted}
+              param={password}
+            />
             {/* <Button text={"Sign In"}/> */}
             <button className="authentication__form-button">Login</button>
           </form>

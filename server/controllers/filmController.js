@@ -1,13 +1,14 @@
 const express = require('express');
 const filmServices = require("../services/filmService");
+const VerifyToken = require('../middleware/verifyToken');
 
 const router = express.Router();
 
-router.get('/', filmServices.getFilms);
-router.post("/new", filmServices.createFilm);
-router.get("/edit/:id", filmServices.showFilm);
-router.put("/edit/:id", filmServices.updateFilm);
-router.delete("/delete/:id", filmServices.deleteFilm);
+router.get('/',VerifyToken, filmServices.getFilms);
+router.post("/new",VerifyToken, filmServices.createFilm);
+router.get("/edit/:id",VerifyToken, filmServices.showFilm);
+router.put("/edit/:id",VerifyToken, filmServices.updateFilm);
+router.delete("/delete/:id",VerifyToken, filmServices.deleteFilm);
 
 
 

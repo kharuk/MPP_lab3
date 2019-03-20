@@ -16,6 +16,9 @@ class Input extends Component {
             onChange={this.props.onChange}
           />
           <i className=""></i>
+          {this.props.submitted && !this.props.param &&
+            <div className="help-block">{this.props.caption}</div>
+          }
         </div>
       )
     }

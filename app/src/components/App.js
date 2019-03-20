@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 import Header from './Header';
 import Main from './Main';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import {Router, Route, Switch} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import './style.scss';
 import info from '../data/Info'
@@ -38,10 +38,10 @@ class App extends Component {
         <div>
           <Route path="/" component={Header} />
            {alert.message &&
-              <div className={`alert ${alert.type} container container__margin`}>{alert.message}</div>
+              <div className={`alert ${alert.type} container container__margin`}>{alert.message.response.data.message}</div>
             }
           <Switch>
-            <Route path="/login" component={Login} />
+            <Route exact path="/login" component={Login} />
             <PrivateRoute 
               exact path="/films" 
               component={Main}
@@ -101,6 +101,7 @@ class App extends Component {
 //   <Container items={this.state.items} header={this.state.header}/>
 function mapStateToProps(state) {
   const { alert } = state;
+  console.log(alert);
   return {
       alert
   };
