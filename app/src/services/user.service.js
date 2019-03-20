@@ -17,9 +17,9 @@ function login(email, password) {
        // .then(handleResponse)
         .then(res => {
             console.log('result', res)
-            console.log(res.data)
+            console.log('data', res.data)
             // store user details and jwt token in local storage to keep user logged in between page refreshes
-             if (res.status){
+             if (res.status === 200){
                 localStorage.setItem('user', JSON.stringify(res));
 
                 return res;
