@@ -15,7 +15,7 @@ import { history } from '../helpers';
 import { connect } from 'react-redux';
 import { PrivateRoute } from './PrivateRouter';
 import { alertActions } from '../actions';
-import { LoginPage } from './LoginPage/LoginPage';
+import  Login  from './Authentication/Login';
 
 class App extends Component {
   constructor(props) {
@@ -37,17 +37,17 @@ class App extends Component {
       <Router history={history}>
         <div>
           <Route path="/" component={Header} />
-          {alert.message &&
+           {alert.message &&
               <div className={`alert ${alert.type} container container__margin`}>{alert.message}</div>
-          }
+            }
           <Switch>
-            <Route path="/login" component={LoginPage} />
+            <Route path="/login" component={Login} />
             <PrivateRoute 
               exact path="/films" 
               component={Main}
               header={this.state.header.filmList}
-                headerItems={this.state.items.filmList}
-                createPath='films'
+              headerItems={this.state.items.filmList}
+              createPath='films'
               /* render={(props) => <Main 
                 {...props} 
                 header={this.state.header.filmList}
@@ -55,21 +55,19 @@ class App extends Component {
                 createPath='films'
               />} *//>
             <PrivateRoute               
-              exact path="/cinemas" 
-              render={(props) => <Main 
-              {...props} 
+              exact path="/cinemas"
+              component={Main} 
               header={this.state.header.cinemaList}
               headerItems={this.state.items.cinemaList}
               createPath='cinemas'
-            />}/>
+            />
             <PrivateRoute 
               exact path="/sessions" 
-              render={(props) => <Main 
-              {...props} 
+              component={Main}
               header={this.state.header.sessionList}
               headerItems={this.state.items.sessionList}
               createPath='sessions'
-            />}/>
+            />
             <PrivateRoute
               exact path={`/films/new`} 
               component={CreateItem}

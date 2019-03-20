@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "Gender",
+    "value": "''"
+  },
+  {
+    "id": 2,
+    "name": "Male",
+    "value": "male"
+  },
+  {
+    "id": 3,
+    "name": "Female",
+    "value": "female"
+  },
+  {
+    "id": 4,
+    "name": "Other",
+    "value": "other"
+  }
+]

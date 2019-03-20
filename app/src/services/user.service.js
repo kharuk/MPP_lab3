@@ -1,4 +1,5 @@
 import { authHeader } from '../helpers';
+import axios from 'axios';
 
 export const userService = {
     login,
@@ -10,15 +11,19 @@ function login(email, password) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: { email, password }
     };
-    return fetch('http://localhost:8080/auth/login', requestOptions)
-        .then(handleResponse)
-        .then(user => {
+    return axios.post('http://localhost:8080/auth/login', {email, password})/* fetch('http://localhost:8080/auth/login', requestOptions) */
+       // .then(handleResponse)
+        .then(res => {
+            console.log('result', res)
+            console.log(res.data)
             // store user details and jwt token in local storage to keep user logged in between page refreshes
-            localStorage.setItem('user', JSON.stringify(user));
+             if (res.status){
+                localStorage.setItem('user', JSON.stringify(res));
 
-            return user;
+                return res;
+            } 
         });
 }
 
@@ -36,7 +41,7 @@ function getAll() {
     return fetch(`localhost:8080/users`, requestOptions).then(handleResponse); */
 }
 
-function handleResponse(response) {
+/* function handleResponse(response) {
     return response.text().then(text => {
         const data = text && JSON.parse(text);
         if (!response.ok) {
@@ -52,4 +57,4 @@ function handleResponse(response) {
 
         return data;
     });
-}
+} */
