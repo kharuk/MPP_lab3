@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import Item from './Item';
 import axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
+import io from 'socket.io-client';
+let socket = io(`http://localhost:8000`);
+
 
 class Table extends Component {
 
@@ -10,15 +13,12 @@ class Table extends Component {
   }
 
   delete = () => {
-    axios.delete(`http://localhost:8080/${this.props.path}/delete/${this.props.obj.id}`)
-      .then(console.log('Deleted'))
-      .then(()=> {
-        this.setState({ 
-          isRedirect: true
-        });
-      })
-     // .then(axios.get(`http://localhost:8080/${this.props.path}`))
-      .catch(err => console.log(err))
+    let id = this.props.obj.id;
+    let name = this.props.name
+    socket.emit(`delete ${name}`, (id));
+    this.setState({ 
+      isRedirect: true
+    });
   }
 
   render() {

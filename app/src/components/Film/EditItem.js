@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Link, Redirect} from 'react-router-dom';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
+import io from 'socket.io-client';
+let socket = io(`http://localhost:8000`);
 
 export default class EditItem extends Component {
   state = {
@@ -12,17 +14,16 @@ export default class EditItem extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/films/edit/'+this.props.match.params.id)
-      .then(response => {
-          this.setState({ 
-            film_name: response.data.name,
-            film_description: response.data.description,
-            film_director: response.data.director
-            });
-      })
-      .catch(function (error) {
-          console.log(error);
-      })
+      let id = this.props.match.params.id;
+      socket.emit('show film', (id));
+
+      socket.on('film shown', (film) => {
+        this.setState({ 
+          film_name: film.name,
+          film_description: film.description,
+          film_director: film.director
+          });
+      });
   }
 
   onSubmit = (e) => {
@@ -32,16 +33,12 @@ export default class EditItem extends Component {
       description: this.state.film_description,
       director: this.state.film_director
     };
-    axios.put('http://localhost:8080/films/edit/'+this.props.match.params.id, obj)
-        .then(res => console.log(res.data))
-        .then(()=> {
-          this.setState({ 
-            isRedirect: true
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-      })
+    let id = this.props.match.params.id
+    console.log(id, obj);
+    socket.emit('update film', id, obj);
+    this.setState({ 
+      isRedirect: true
+    });
   }
 
   onChangeName = (e) => {

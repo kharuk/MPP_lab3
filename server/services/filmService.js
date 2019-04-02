@@ -1,42 +1,54 @@
 const Film  = require('../models/film');
 
-function getFilms(req, res) {
+function getFilms(socket) {
   Film.findAll()
   .then(films => {
-    res.json(films);
+    console.log("film recived");
+    socket.emit('film recived',films);
+    socket.broadcast.emit('task recived',films);
   })
-  .catch(err => res.send(err));
+  .catch(err => console.log(err));
 }
 
-function createFilm(req, res) {
-  Film.create(req.body)
-  .then(() => {
-    res.status(200).json({'films': 'film is added successfully'});
+function createFilm(film,socket) {
+  Film.create(film)
+  .then((film) => {
+    console.log("film created");
+    socket.emit('film created',film);
+    socket.broadcast.emit('task created',film);
     //res.redirect('/films');
   })
-  .catch(err => res.status(400).send("unable to save to database"));
+  .catch(err => console.log(err));
 }
 
-function showFilm(req, res) {
-  Film.findById(req.params.id)
-  .then((film) => res.json(film))
-  .catch(err => res.send(err));
+function showFilm(id, socket) {
+   Film.findById(id)
+  .then((film) => {
+    console.log("film shown");
+    socket.emit('film shown',film);
+    socket.broadcast.emit('task shown',film);
+  })
+  .catch(err => console.log(err)); 
 }
 
-function updateFilm(req, res) {
-  Film.update(req.body, {where: { id: req.params.id }})
-  .then(() => {
-    res.json('films: Update complete');
+function updateFilm(id,data,socket) {
+  console.log(data);
+  Film.update(data, {where: { id: id }})
+  .then((film) => {
+    console.log("film updated",film);
+    socket.emit('film updated',film);
+    socket.broadcast.emit('film updated',film);
    // res.redirect("/films");
   })
-  .catch(err => res.send(err));
+  .catch(err => console.log(err));
 }
 
-function deleteFilm(req, res) {
-  Film.destroy({where: {id: req.params.id}})
-  .then(() => {
-    res.json('Successfully removed');
-   // res.redirect('/films');
+function deleteFilm(id,socket) {
+  Film.destroy({where: {id: id}})
+  .then((film) => {
+    console.log("film deleted");
+    socket.emit('film deleted',film.id);
+    socket.broadcast.emit('film deleted',film.id);
   });
 }
 

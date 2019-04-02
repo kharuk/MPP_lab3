@@ -3,6 +3,9 @@ import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
 
+import io from 'socket.io-client';
+let socket = io(`http://localhost:8000`);
+
 class CreateItem extends Component {
   state = {
     film_name: '',
@@ -10,6 +13,7 @@ class CreateItem extends Component {
     film_director:'',
     isRedirect: false
   }
+
   onSubmit = (e) => {
     e.preventDefault();
     const obj = {
@@ -17,18 +21,13 @@ class CreateItem extends Component {
       description: this.state.film_description,
       director: this.state.film_director
     };
-    axios.post('http://localhost:8080/films/new', obj)
-        .then(res => console.log(res.data))
-        .then(()=> {
-          this.setState({
-            film_name: '',
-            film_description: '',
-            film_director:'',
-            isRedirect: true
-          })
-        })
-
-    
+    socket.emit('create film', obj)
+    this.setState({
+      film_name: '',
+      film_description: '',
+      film_director:'',
+      isRedirect: true
+    })  
   }
 
   onChangeName = (e) => {
