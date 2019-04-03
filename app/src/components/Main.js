@@ -4,6 +4,7 @@ import FilmTable from './Film/FilmTable';
 import CinemaTable from './Cinema/CinemaTable';
 import SessionTable from './Session/SessionTable';
 import Header from './Header';
+import ReduxToastr from 'react-redux-toastr'
 
 
 class Main extends Component {
@@ -21,6 +22,16 @@ class Main extends Component {
   render() {
     return (
       <>
+      <ReduxToastr
+        timeOut={4000}
+        newestOnTop={false}
+        preventDuplicates
+        position="top-left"
+        transitionIn="fadeIn"
+        transitionOut="fadeOut"
+        progressBar
+        closeOnToastrClick
+      />
       <div className="container container__margin" >
         <Header header={this.props.header}/>
         <Link to={`/${this.props.createPath}/new`} className="btn btn-success" role="button">Add</Link>

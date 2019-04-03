@@ -10,6 +10,7 @@ const authServices = require("./services/authService");
 const cinemaServices = require("./services/cinemaService");
 const filmServices = require("./services/filmService");
 const sessionServices = require("./services/sessionService");
+const VerifyToken = require('./middleware/verifyToken');
 
  app.use(cors());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -50,8 +51,23 @@ io.on("connection", function(socket) {
   socket.on("delete cinema", id => {
     cinemaServices.deleteCinema(id, socket);
   });
-  socket.on("get cinemas", () => {
-    cinemaServices.getCinemas(socket);
+  socket.on("get cinemas", (token) => {
+    if (VerifyToken(token)){
+      cinemaServices.getCinemas(socket);
+    } else {
+      console.log(JSON.stringify(
+        {
+            status: 401,
+            message: "Unauthorized"
+        }));
+      socket.send(JSON.stringify(
+            {
+                status: 401,
+                message: "Unauthorized"
+            }
+      )
+    );
+    }
   });
   socket.on("update cinema",(id, data) => {
     cinemaServices.updateCinema(id, data, socket);
@@ -66,8 +82,20 @@ io.on("connection", function(socket) {
   socket.on("delete session", id => {
     sessionServices.deleteSession(id, socket);
   });
-  socket.on("get sessions", () => {
-    sessionServices.getSessions(socket);
+  socket.on("get sessions", (token) => {
+    
+    if (VerifyToken(token)){
+      sessionServices.getSessions(socket);
+    } else {
+      console.log(JSON.stringify(
+        {
+            status: 401,
+            message: "Unauthorized"
+        }));
+      let data = {message: "Unauthorized", status: 401}
+      socket.emit("unauthorized", data);
+      socket.broadcast.emit('unauthorized',data);
+    }
   });
   socket.on("update session",(id, data) => {
     sessionServices.updateSession(id, data, socket);

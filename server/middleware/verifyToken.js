@@ -1,23 +1,22 @@
 let jwt = require('jsonwebtoken');
 const config = require('../config/jwtSecret');
 
-let verifyToken = (req, res, next) => {
-  let token = req.headers['x-access-token'] || req.headers['authorization'];
+let verifyToken = (token) => {
+  //let token = req.headers['x-access-token'] || req.headers['authorization'];
 
   if(!token){
-    return res.status(401).send({ auth: false, message: 'No token provided.' });
+    return false;
   }
-
-  jwt.verify(token, config.secret, (err, decoded) => {
+  console.log('token', token);
+  let isChecked = jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
-      return res.status(500).send({ 
-        auth: false, 
-        message: 'Failed to authenticate token.' 
-      });
+      console.log('err', err);
+      return false;
     } 
-    req.userId = decoded.id;
-    next();   
+    //req.userId = decoded.id;
+    return true  
   });
+  return isChecked;
 }
 
 module.exports = verifyToken;

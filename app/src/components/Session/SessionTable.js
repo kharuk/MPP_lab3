@@ -1,36 +1,39 @@
 import React, { Component } from 'react';
 import TableHeader from '../TableHeader';
 import TableRow from '../TableRow';
+import { Redirect} from 'react-router-dom';
 import axios from 'axios';
 import io from 'socket.io-client';
+import { toastr } from 'react-redux-toastr';
+import { withRouter } from 'react-router'
 let socket = io(`http://localhost:8000`);
+
 
 class SessionTable extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      items: []
+      items: [],
+      isRedirect: false
     };
   }
 
   componentDidMount(){
-    socket.emit('get sessions');
+    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+    //console.log(token);
+    socket.emit('get sessions', token);
     socket.on('session recived', (sessions) => {
       this.setState({ items: sessions });
     });
-
-/*     let token = JSON.parse(window.localStorage.getItem('user'));
-    var headers = { Authorization: token.data.token };
-    axios.get(`http://localhost:8080/sessions/`, { headers: headers})
-      .then(response => {
-        console.log(response);
-        this.setState({ items: response.data });
+    socket.on('unauthorized', (data) => {
+      console.log(data.message);
+      toastr.error(data.message);
+      this.setState({
+       // message: data.message,
+        isRedirect: true
       })
-      .catch((error) => {
-        console.log(error);
-      })
-      console.log(this.state.items); */
+    });
   }
 
   tabRow = () => {
@@ -48,15 +51,42 @@ class SessionTable extends Component {
     }
   }
 
+  delayRedirect = event => {
+    const { history: { push } } = this.props;
+   // event.preventDefault();
+    setTimeout(()=>push('/login/'), 3000);
+  }
+
+
   render() {
+       if (this.state.isRedirect) {
+          //return <Redirect to={'/login/'}/>
+          this.delayRedirect();
+      }  
+
     return (
-      <table className="table table-striped">
-        <TableHeader items={this.props.items}/>
-        <tbody>
-          { this.tabRow()}
-        </tbody>
-      </table>
+      <React.Fragment>
+{/*         {this.state.message 
+        ?
+        <>
+          {this.state.message && 
+          <p 
+            className={{
+              backgroudColor
+            }}>
+            {this.state.message}
+          </p>}
+        </>
+        : */}
+        <table className="table table-striped">
+          <TableHeader items={this.props.items}/>
+          <tbody>
+            { this.tabRow()}
+          </tbody>
+        </table>
+      {/*   } */}
+      </React.Fragment>
     );
   }
 }
-export default SessionTable;
+export default withRouter(SessionTable);
