@@ -3,7 +3,13 @@ import axios from 'axios';
 import { Link, Redirect} from 'react-router-dom';
 import { ValidationForm, TextInput, SelectGroup} from "react-bootstrap4-form-validation";
 import io from 'socket.io-client';
-let socket = io(`http://localhost:8000`);
+import { toastr } from 'react-redux-toastr';
+let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+let socket = io(`http://localhost:8000`,{
+    query: {
+        token: token,
+      },
+});
 
 
 export default class EditItem extends Component {
@@ -17,11 +23,21 @@ export default class EditItem extends Component {
     isRedirect: false
   }
 
+  constructor(props){
+    super(props);
+    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+    this.socket = io(`http://localhost:8000`,{
+        query: {
+            token: token,
+          },
+        });
+  }
+
   componentDidMount() {
     let id = this.props.match.params.id;
-    socket.emit('show session', (id));
+    this.socket.emit('show session', (id));
 
-    socket.on('session shown', (session) => {
+    this.socket.on('session shown', (session) => {
       this.setState({ 
         session_date: session.session.date,
         session_film_id: session.session.Film_Id,
@@ -29,6 +45,10 @@ export default class EditItem extends Component {
         session_films: session.films,
         session_cinemas: session.cinemas,
         });
+    });
+    this.socket.on('error', function(err){
+      toastr.error(err);
+     // this.setState({ isRedirect: true });
     });
   }
 
@@ -41,7 +61,7 @@ export default class EditItem extends Component {
     };
     let id = this.props.match.params.id
     console.log(id, obj);
-    socket.emit('update session', id, obj);
+    this.socket.emit('update session', id, obj);
     this.setState({ 
       isRedirect: true
     });

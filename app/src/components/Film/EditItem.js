@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link, Redirect} from 'react-router-dom';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
 import io from 'socket.io-client';
+import { toastr } from 'react-redux-toastr';
 let socket = io(`http://localhost:8000`);
 
 export default class EditItem extends Component {
@@ -13,16 +14,30 @@ export default class EditItem extends Component {
     isRedirect: false
   }
 
+  constructor(props){
+    super(props);
+    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+    this.socket = io(`http://localhost:8000`,{
+    query: {
+        token: token,
+      },
+    });
+  }
+
   componentDidMount() {
       let id = this.props.match.params.id;
-      socket.emit('show film', (id));
+      this.socket.emit('show film', (id));
 
-      socket.on('film shown', (film) => {
+      this.socket.on('film shown', (film) => {
         this.setState({ 
           film_name: film.name,
           film_description: film.description,
           film_director: film.director
           });
+      });
+      this.socket.on('error', function(err){
+        toastr.error(err);
+       // this.setState({ isRedirect: true });
       });
   }
 
@@ -35,7 +50,7 @@ export default class EditItem extends Component {
     };
     let id = this.props.match.params.id
     console.log(id, obj);
-    socket.emit('update film', id, obj);
+    this.socket.emit('update film', id, obj);
     this.setState({ 
       isRedirect: true
     });

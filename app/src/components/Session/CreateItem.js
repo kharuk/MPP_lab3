@@ -3,7 +3,8 @@ import { Link, Redirect} from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput, SelectGroup} from "react-bootstrap4-form-validation";
 import io from 'socket.io-client';
-let socket = io(`http://localhost:8000`);
+import { toastr } from 'react-redux-toastr';
+
 
 class CreateItem extends Component {
   state = {
@@ -14,15 +15,29 @@ class CreateItem extends Component {
     session_cinema_id: 0,
     isRedirect: false
   }
+  constructor(props){
+    super(props);
+    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+    this.socket = io(`http://localhost:8000`,{
+        query: {
+            token: token,
+          },
+        });
+  }
 
   componentDidMount() {
-    socket.emit('befor add session');
-    socket.on('options recived', (data) => {
+    this.socket.emit('befor add session');
+    this.socket.on('options recived', (data) => {
       this.setState({ 
         session_films: data.films,
         session_cinemas: data.cinemas,
         });
     });
+    this.socket.on('error', function(err){
+      toastr.error(err);
+     // this.setState({ isRedirect: true });
+    });
+
   }
 
   onSubmit = (e) => {
@@ -32,7 +47,7 @@ class CreateItem extends Component {
       Film_Id: this.state.session_film_id,
       Cinema_Id: this.state.session_cinema_id
     };
-    socket.emit('create session', obj)
+    this.socket.emit('create session', obj)
     this.setState({
       session_date: '',
       session_films: [],
@@ -63,7 +78,6 @@ class CreateItem extends Component {
   }
 
   render() {
-
     if (this.state.isRedirect) {
       return <Redirect to={'/sessions/'}/>
     }

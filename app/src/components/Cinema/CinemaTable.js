@@ -3,6 +3,7 @@ import TableHeader from '../TableHeader';
 import TableRow from '../TableRow';
 import axios from 'axios';
 import io from 'socket.io-client';
+import { toastr } from 'react-redux-toastr';
 let socket = io(`http://localhost:8000`);
 
 class CinemaTable extends Component {
@@ -12,29 +13,29 @@ class CinemaTable extends Component {
     this.state = {
       items: []
     };
+    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+    this.socket = io(`http://localhost:8000`,{
+    query: {
+        token: token,
+      },
+    });
   }
 
   componentDidMount(){
     console.log('here');
-    socket.emit('get cinemas');
-    socket.on('cinema recived', (cinemas) => {
+    this.socket.emit('get cinemas');
+    this.socket.on('cinema recived', (cinemas) => {
       this.setState({ items: cinemas });
     });
-
-/*     let token = JSON.parse(window.localStorage.getItem('user'));
-    var headers = { Authorization: token.data.token };
-    axios.get(`http://localhost:8080/cinemas`, { headers: headers})
-      .then(response => {
-        console.log(response);
-        this.setState({ items: response.data });
-      })
-      .catch((error) => {
-        console.log(error);
-      }) */
+    this.socket.on('error', function(err){
+      toastr.error(err);
+     // this.setState({ isRedirect: true });
+    });
   }
 
   tabRow = () => {
     let path  = this.props.path;
+    let name = this.props.name;
     if (this.state.items.length > 0){
       return this.state.items.map(function(object, i){
         const arr = {
@@ -43,7 +44,7 @@ class CinemaTable extends Component {
           "phone": object.phone,
           "address": object.address
         };
-        return <TableRow path={path} obj={arr} key={i} />;
+        return <TableRow name={name} path={path} obj={arr} key={i} />;
       })
     }
   }

@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
-
+import { toastr } from 'react-redux-toastr';
 import io from 'socket.io-client';
-let socket = io(`http://localhost:8000`);
 
 class CreateItem extends Component {
   state = {
@@ -14,6 +13,25 @@ class CreateItem extends Component {
     isRedirect: false
   }
 
+  constructor(props){
+    super(props);
+    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+    this.socket = io(`http://localhost:8000`,{
+    query: {
+        token: token,
+      },
+    });
+
+  }
+
+  componentDidMount() {
+    this.socket.on('error', function(err){
+      toastr.error(err);
+     // this.setState({ isRedirect: true });
+    });
+  }
+
+
   onSubmit = (e) => {
     e.preventDefault();
     const obj = {
@@ -21,7 +39,7 @@ class CreateItem extends Component {
       description: this.state.film_description,
       director: this.state.film_director
     };
-    socket.emit('create film', obj)
+    this.socket.emit('create film', obj)
     this.setState({
       film_name: '',
       film_description: '',

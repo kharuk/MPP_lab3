@@ -6,13 +6,25 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
 import { withRouter } from 'react-router'
-let socket = io(`http://localhost:8000`);
+let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+let socket = io(`http://localhost:8000`,{
+    query: {
+        token: token,
+      },
+    });
 
 
 class SessionTable extends Component {
 
-  constructor(props) {
+  constructor(props){
     super(props);
+    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+    this.socket = io(`http://localhost:8000`,{
+        query: {
+            token: token,
+          },
+        });
+
     this.state = {
       items: [],
       isRedirect: false
@@ -20,24 +32,19 @@ class SessionTable extends Component {
   }
 
   componentDidMount(){
-    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-    //console.log(token);
-    socket.emit('get sessions', token);
-    socket.on('session recived', (sessions) => {
+    this.socket.emit('get sessions');
+    this.socket.on('session recived', (sessions) => {
       this.setState({ items: sessions });
     });
-    socket.on('unauthorized', (data) => {
-      console.log(data.message);
-      toastr.error(data.message);
-      this.setState({
-       // message: data.message,
-        isRedirect: true
-      })
+    this.socket.on('error', function(err){
+      toastr.error(err);
+     // this.setState({ isRedirect: true });
     });
   }
 
   tabRow = () => {
     let path  = this.props.path;
+    let name = this.props.name;
     if (this.state.items.length > 0){
       return this.state.items.map(function(object, i){
         const arr = {
@@ -46,7 +53,7 @@ class SessionTable extends Component {
           "film": object.Film_Id,
           "date": object.date
         };
-        return <TableRow path={path} obj={arr} key={i} />;
+        return <TableRow name={name} path={path} obj={arr} key={i} />;
       })
     }
   }
@@ -66,18 +73,6 @@ class SessionTable extends Component {
 
     return (
       <React.Fragment>
-{/*         {this.state.message 
-        ?
-        <>
-          {this.state.message && 
-          <p 
-            className={{
-              backgroudColor
-            }}>
-            {this.state.message}
-          </p>}
-        </>
-        : */}
         <table className="table table-striped">
           <TableHeader items={this.props.items}/>
           <tbody>

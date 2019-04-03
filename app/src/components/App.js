@@ -17,6 +17,7 @@ import { PrivateRoute } from './PrivateRouter';
 import { alertActions } from '../actions';
 import  Login  from './Authentication/Login';
 import io from 'socket.io-client';
+import ReduxToastr from 'react-redux-toastr'
 let socket = io(`http://localhost:8000`);
 
 class App extends Component {
@@ -42,6 +43,16 @@ class App extends Component {
            {alert.message &&
               <div className={`alert ${alert.type} container container__margin`}>{alert.message.response.data.message}</div>
             }
+          <ReduxToastr
+            timeOut={4000}
+            newestOnTop={false}
+            preventDuplicates
+            position="top-left"
+            transitionIn="fadeIn"
+            transitionOut="fadeOut"
+            progressBar
+            closeOnToastrClick
+          />
           <Switch>
             <Route exact path="/login" component={Login} />
             <PrivateRoute 

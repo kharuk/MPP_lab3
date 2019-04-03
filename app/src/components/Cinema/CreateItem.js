@@ -3,6 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
 import io from 'socket.io-client';
+import { toastr } from 'react-redux-toastr';
 let socket = io(`http://localhost:8000`);
 
 class CreateItem extends Component {
@@ -13,6 +14,24 @@ class CreateItem extends Component {
     cinema_address:'',
     isRedirect: false
   }
+
+  constructor(props){
+    super(props);
+    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+    this.socket = io(`http://localhost:8000`,{
+    query: {
+        token: token,
+      },
+    });
+  }
+
+  componentDidMount() {
+    this.socket.on('error', function(err){
+      toastr.error(err);
+     // this.setState({ isRedirect: true });
+    });
+  }
+
   onSubmit = (e) => {
     e.preventDefault();
 
@@ -21,7 +40,7 @@ class CreateItem extends Component {
       phone: this.state.cinema_phone,
       address: this.state.cinema_address
     };
-    socket.emit('create cinema', obj)
+    this.socket.emit('create cinema', obj)
     this.setState({
       cinema_name: '',
       cinema_phone: '',

@@ -3,28 +3,47 @@ import Item from './Item';
 import axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
 import io from 'socket.io-client';
-let socket = io(`http://localhost:8000`);
-
+import { toastr } from 'react-redux-toastr';
+let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+let socket = io(`http://localhost:8000`,{
+  query: {
+    token: token,
+  },
+});
 
 class Table extends Component {
+
+  constructor(props){
+    super(props);
+    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+    this.socket = io(`http://localhost:8000`,{
+        query: {
+            token: token,
+          },
+        });
+  }
 
   state = {
     isRedirect: false
   }
 
+
+
   delete = () => {
     let id = this.props.obj.id;
     let name = this.props.name
-    socket.emit(`delete ${name}`, (id));
+    console.log(name);
+    this.socket.emit(`delete ${name}`, (id));
     this.setState({ 
       isRedirect: true
     });
+
   }
 
   render() {
-  //  console.log(this.props.items);
-
-  
+    this.socket.on('error', function(err){
+      toastr.error(err);
+    });
     if (this.state.isRedirect) {
       return <Redirect to={`/${this.props.path}/`}/>
     }

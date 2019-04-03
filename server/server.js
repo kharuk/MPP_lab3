@@ -5,6 +5,8 @@ const router = require('./routes/api');
 const app = express();
 const cors = require('cors');
 const io = require("socket.io")();
+const config = require('./config/jwtSecret');
+let jwt = require('jsonwebtoken');
 
 const authServices = require("./services/authService");
 const cinemaServices = require("./services/cinemaService");
@@ -26,8 +28,26 @@ app.listen(8080, () => {
   console.log(`Server started on port 8080`);
 }); 
 
-
-io.on("connection", function(socket) {
+ io.use((socket, next) => {
+  const token = socket.handshake.query.token;
+  if(!token){
+    console.log('No token');
+  }else {
+  jwt.verify(token, config.secret, (err, decoded) => {
+    if (err) {
+      console.log(JSON.stringify(
+        {
+            status: 401,
+            message: "Unauthorized"
+        }));
+      //console.log(err);
+      return next({message: "Unauthorized", status: 401});
+    } 
+    next();
+  });
+}
+ })
+.on("connection", function(socket) {
   socket.on("create film", film => {
     filmServices.createFilm(film, socket);
   });
@@ -38,7 +58,6 @@ io.on("connection", function(socket) {
     filmServices.getFilms(socket);
   });
   socket.on("update film",(id, data) => {
-    console.log('qwerty', id, data);
     filmServices.updateFilm(id, data, socket);
   });
   socket.on("show film",(id) => {
@@ -52,22 +71,7 @@ io.on("connection", function(socket) {
     cinemaServices.deleteCinema(id, socket);
   });
   socket.on("get cinemas", (token) => {
-    if (VerifyToken(token)){
-      cinemaServices.getCinemas(socket);
-    } else {
-      console.log(JSON.stringify(
-        {
-            status: 401,
-            message: "Unauthorized"
-        }));
-      socket.send(JSON.stringify(
-            {
-                status: 401,
-                message: "Unauthorized"
-            }
-      )
-    );
-    }
+    cinemaServices.getCinemas(socket);
   });
   socket.on("update cinema",(id, data) => {
     cinemaServices.updateCinema(id, data, socket);
@@ -82,20 +86,9 @@ io.on("connection", function(socket) {
   socket.on("delete session", id => {
     sessionServices.deleteSession(id, socket);
   });
-  socket.on("get sessions", (token) => {
-    
-    if (VerifyToken(token)){
-      sessionServices.getSessions(socket);
-    } else {
-      console.log(JSON.stringify(
-        {
-            status: 401,
-            message: "Unauthorized"
-        }));
-      let data = {message: "Unauthorized", status: 401}
-      socket.emit("unauthorized", data);
-      socket.broadcast.emit('unauthorized',data);
-    }
+  socket.on("get sessions", () => {
+    console.log('here');
+    sessionServices.getSessions(socket);
   });
   socket.on("update session",(id, data) => {
     sessionServices.updateSession(id, data, socket);

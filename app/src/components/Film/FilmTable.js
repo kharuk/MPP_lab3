@@ -3,8 +3,8 @@ import TableHeader from '../TableHeader';
 import TableRow from '../TableRow';
 import axios from 'axios';
 import io from 'socket.io-client';
+import { toastr } from 'react-redux-toastr';
 
-let socket = io(`http://localhost:8000`);
 
 class FilmTable extends Component {
 
@@ -13,28 +13,26 @@ class FilmTable extends Component {
     this.state = {
       items: []
     };
+    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+    this.socket = io(`http://localhost:8000`,{
+    query: {
+        token: token,
+      },
+    });
   }
 
 
 
   componentDidMount(){
-  //  let token = JSON.parse(window.localStorage.getItem('user'));
-/*     let t = this.getCookie('token');
-    console.log('qwerty', t); */
-  //  var headers = { Authorization: token.data.token };
     console.log('here');
-    socket.emit('get films');
-    socket.on('film recived', (films) => {
+    this.socket.emit('get films');
+    this.socket.on('film recived', (films) => {
       this.setState({ items: films });
     });
-   /*  axios.get('http://localhost:8080/films', { headers: headers})
-      .then(response => {
-        console.log(response);
-        this.setState({ items: response.data });
-      })
-      .catch((error) => {
-        console.log(error);
-      }) */
+    this.socket.on('error', function(err){
+      toastr.error(err);
+     // this.setState({ isRedirect: true });
+    });
   }
 
   tabRow = () => {
