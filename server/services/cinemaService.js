@@ -1,40 +1,46 @@
 const Cinema  = require('../models/cinema');
 
-function getCinemas(req, res) {
+function getCinemas(socket) {
   Cinema.findAll()
   .then(cinemas => {
-    res.json(cinemas);
+    console.log("cinema recived");
+    socket.emit('cinema recived',cinemas);
+    socket.broadcast.emit('cinema recived',cinemas);
   })
-  .catch(err => res.send(err));
+  .catch(err => console.log(err));
 }
 
-function createCinema(req, res) {
-  console.log(req.body);
-  Cinema.create(req.body)
-  .then(() => {
- //   res.redirect('/cinemas'));
-    res.status(200).json({'cinemas': 'cinema is added successfully'})
+function createCinema(cinema,socket) {
+  Cinema.create(cinema)
+  .then((cinema) => {
+    console.log("cinema created");
   })
-  .catch(err => res.status(400).send("unable to save to database"));
+  .catch(err => console.log(err));
 }
 
-function showCinema(req, res) {
-  Cinema.findById(req.params.id)
-  .then((cinema) => res.json(cinema))
-  .catch(err => res.send(err));
+function showCinema(id, socket) {
+  Cinema.findById(id)
+  .then((cinema) => {
+    console.log("cinema shown");
+    socket.emit('cinema shown',cinema);
+    socket.broadcast.emit('cinema shown',cinema);
+  })
+  .catch(err => console.log(err)); 
 }
 
-function updateCinema(req, res) {
-  Cinema.update(req.body, {where: { id: req.params.id }})
-  .then(() => res.json('cinemas: Update complete'))
-  .catch(err => res.send(err));
+function updateCinema(id,data,socket) {
+  Cinema.update(data, {where: { id: id }})
+  .then((cinema) => {
+    console.log("cinema updated",cinema);
+  })
+  .catch(err => console.log(err));
 }
 
-function deleteCinema(req, res) {
-  Cinema.destroy({where: {id: req.params.id}})
-  .then(() =>{
-    res.json('Successfully removed');
-  }); //res.redirect('/cinemas'));
+function deleteCinema(id,socket) {
+  Cinema.destroy({where: {id: id}})
+  .then((cinema) => {
+    console.log("cinema deleted");
+  });
 }
 
 module.exports = {

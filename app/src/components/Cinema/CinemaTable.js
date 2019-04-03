@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import TableHeader from '../TableHeader';
 import TableRow from '../TableRow';
 import axios from 'axios';
+import io from 'socket.io-client';
+let socket = io(`http://localhost:8000`);
 
 class CinemaTable extends Component {
 
@@ -13,7 +15,13 @@ class CinemaTable extends Component {
   }
 
   componentDidMount(){
-    let token = JSON.parse(window.localStorage.getItem('user'));
+    console.log('here');
+    socket.emit('get cinemas');
+    socket.on('cinema recived', (cinemas) => {
+      this.setState({ items: cinemas });
+    });
+
+/*     let token = JSON.parse(window.localStorage.getItem('user'));
     var headers = { Authorization: token.data.token };
     axios.get(`http://localhost:8080/cinemas`, { headers: headers})
       .then(response => {
@@ -22,7 +30,7 @@ class CinemaTable extends Component {
       })
       .catch((error) => {
         console.log(error);
-      })
+      }) */
   }
 
   tabRow = () => {

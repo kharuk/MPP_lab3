@@ -5,7 +5,7 @@ function getFilms(socket) {
   .then(films => {
     console.log("film recived");
     socket.emit('film recived',films);
-    socket.broadcast.emit('task recived',films);
+    socket.broadcast.emit('film recived',films);
   })
   .catch(err => console.log(err));
 }
@@ -14,8 +14,8 @@ function createFilm(film,socket) {
   Film.create(film)
   .then((film) => {
     console.log("film created");
-    socket.emit('film created',film);
-    socket.broadcast.emit('task created',film);
+  //  socket.emit('film created',film);
+  //  socket.broadcast.emit('task created',film);
     //res.redirect('/films');
   })
   .catch(err => console.log(err));
@@ -26,7 +26,7 @@ function showFilm(id, socket) {
   .then((film) => {
     console.log("film shown");
     socket.emit('film shown',film);
-    socket.broadcast.emit('task shown',film);
+    socket.broadcast.emit('film shown',film);
   })
   .catch(err => console.log(err)); 
 }
@@ -36,8 +36,8 @@ function updateFilm(id,data,socket) {
   Film.update(data, {where: { id: id }})
   .then((film) => {
     console.log("film updated",film);
-    socket.emit('film updated',film);
-    socket.broadcast.emit('film updated',film);
+  //  socket.emit('film updated',film);
+  //  socket.broadcast.emit('film updated',film);
    // res.redirect("/films");
   })
   .catch(err => console.log(err));
@@ -47,8 +47,8 @@ function deleteFilm(id,socket) {
   Film.destroy({where: {id: id}})
   .then((film) => {
     console.log("film deleted");
-    socket.emit('film deleted',film.id);
-    socket.broadcast.emit('film deleted',film.id);
+  //  socket.emit('film deleted',film.id);
+  //  socket.broadcast.emit('film deleted',film.id);
   });
 }
 

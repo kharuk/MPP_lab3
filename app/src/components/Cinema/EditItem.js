@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
+import io from 'socket.io-client';
+let socket = io(`http://localhost:8000`);
 
 class CreateItem extends Component {
   state = {
@@ -12,17 +14,17 @@ class CreateItem extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/cinemas/edit/'+this.props.match.params.id)
-      .then(response => {
-          this.setState({ 
-            cinema_name: response.data.name,
-            cinema_phone: response.data.phone,
-            cinema_address: response.data.address
-            });
-      })
-      .catch(function (error) {
-          console.log(error);
-      })
+
+    let id = this.props.match.params.id;
+    socket.emit('show cinema', (id));
+
+    socket.on('cinema shown', (cinema) => {
+      this.setState({ 
+        cinema_name: cinema.name,
+        cinema_phone: cinema.phone,
+        cinema_address: cinema.address
+        });
+    });
   }
 
   onSubmit = (e) => {
@@ -32,37 +34,30 @@ class CreateItem extends Component {
       phone: this.state.cinema_phone,
       address: this.state.cinema_address
     };
-    axios.put('http://localhost:8080/cinemas/edit/'+this.props.match.params.id, obj)
-        .then(res => console.log(res.data))
-        .then(()=> {
-          this.setState({ 
-            isRedirect: true
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-      })
-    }
+    let id = this.props.match.params.id
+    socket.emit('update cinema', id, obj);
+    this.setState({ 
+      isRedirect: true
+    });
+  }
   
+  onChangeName = (e) => {
+    this.setState({
+      cinema_name: e.target.value
+    });
+  }
 
+  onChangePhone = (e) => {
+    this.setState({
+      cinema_phone: e.target.value
+    });
+  }
 
-    onChangeName = (e) => {
-      this.setState({
-        cinema_name: e.target.value
-      });
-    }
-  
-    onChangePhone = (e) => {
-      this.setState({
-        cinema_phone: e.target.value
-      });
-    }
-  
-    onChangeAddress = (e) => {
-      this.setState({
-        cinema_address: e.target.value
-      });
-    }
+  onChangeAddress = (e) => {
+    this.setState({
+      cinema_address: e.target.value
+    });
+  }
 
   render() {
 

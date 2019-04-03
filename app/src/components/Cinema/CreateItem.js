@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
+import io from 'socket.io-client';
+let socket = io(`http://localhost:8000`);
 
 class CreateItem extends Component {
 
@@ -19,19 +21,13 @@ class CreateItem extends Component {
       phone: this.state.cinema_phone,
       address: this.state.cinema_address
     };
-    axios.post('http://localhost:8080/cinemas/new', obj)
-        .then(res => console.log(res.data))
-        .then( () => {
-          this.setState({
-            cinema_name: '',
-            cinema_phone: '',
-            cinema_address:'',
-            isRedirect: true
-          })
-        });
-
-
-  //}
+    socket.emit('create cinema', obj)
+    this.setState({
+      cinema_name: '',
+      cinema_phone: '',
+      cinema_address:'',
+      isRedirect: true
+    })
   }
 
   onChangeName = (e) => {

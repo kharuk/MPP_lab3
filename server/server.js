@@ -43,6 +43,24 @@ io.on("connection", function(socket) {
   socket.on("show film",(id) => {
     filmServices.showFilm(id, socket);
   });
+
+  socket.on("create cinema", cinema => {
+    cinemaServices.createCinema(cinema, socket);
+  });
+  socket.on("delete cinema", id => {
+    cinemaServices.deleteCinema(id, socket);
+  });
+  socket.on("get cinemas", () => {
+    cinemaServices.getCinemas(socket);
+  });
+  socket.on("update cinema",(id, data) => {
+    cinemaServices.updateCinema(id, data, socket);
+  });
+  socket.on("show cinema",(id) => {
+    cinemaServices.showCinema(id, socket);
+  });
+
+
 });
 
 const port = 8000;
