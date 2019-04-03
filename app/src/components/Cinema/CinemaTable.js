@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import TableHeader from '../TableHeader';
 import TableRow from '../TableRow';
-import axios from 'axios';
 import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
+import { withRouter } from 'react-router'
 let socket = io(`http://localhost:8000`);
 
 class CinemaTable extends Component {
@@ -27,9 +27,9 @@ class CinemaTable extends Component {
     this.socket.on('cinema recived', (cinemas) => {
       this.setState({ items: cinemas });
     });
-    this.socket.on('error', function(err){
+    this.socket.on('error', (err)=> {
       toastr.error(err);
-     // this.setState({ isRedirect: true });
+      this.setState({ isRedirect: true });
     });
   }
 
@@ -49,7 +49,18 @@ class CinemaTable extends Component {
     }
   }
 
-  render() {
+    delayRedirect = event => {
+      const { history: { push } } = this.props;
+    // event.preventDefault();
+      setTimeout(()=>push('/login/'), 3000);
+    }
+
+
+    render() {
+      if (this.state.isRedirect) {
+        //return <Redirect to={'/login/'}/>
+        this.delayRedirect();
+    } 
     return (
       <table className="table table-striped">
         <TableHeader items={this.props.items}/>
@@ -60,4 +71,4 @@ class CinemaTable extends Component {
     );
   }
 }
-export default CinemaTable;
+export default withRouter(CinemaTable);

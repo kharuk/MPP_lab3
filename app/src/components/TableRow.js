@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import Item from './Item';
-import axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
 import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
-let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+/* let token = JSON.parse(window.localStorage.getItem('user')).data.token;
 let socket = io(`http://localhost:8000`,{
   query: {
     token: token,
   },
-});
+}); */
 
 class Table extends Component {
 
@@ -26,9 +25,6 @@ class Table extends Component {
   state = {
     isRedirect: false
   }
-
-
-
   delete = () => {
     let id = this.props.obj.id;
     let name = this.props.name

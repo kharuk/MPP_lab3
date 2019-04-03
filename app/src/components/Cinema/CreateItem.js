@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
 import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
+import { withRouter } from 'react-router'
 let socket = io(`http://localhost:8000`);
 
 class CreateItem extends Component {
@@ -26,9 +27,9 @@ class CreateItem extends Component {
   }
 
   componentDidMount() {
-    this.socket.on('error', function(err){
+    this.socket.on('error', (err) => {
       toastr.error(err);
-     // this.setState({ isRedirect: true });
+      this.setState({ isFalseLogin: true });
     });
   }
 
@@ -67,7 +68,17 @@ class CreateItem extends Component {
     });
   }
 
+  delayRedirect = event => {
+    const { history: { push } } = this.props;
+    setTimeout(()=>push('/login/'), 3000);
+  }
+
+
   render() {
+    if (this.state.isFalseLogin) {
+      //return <Redirect to={'/login/'}/>
+      this.delayRedirect();
+    }  
 
     if (this.state.isRedirect) {
       return <Redirect to={'/cinemas/'}/>
@@ -130,4 +141,4 @@ class CreateItem extends Component {
     );
   }
 }
-export default CreateItem;
+export default withRouter(CreateItem);

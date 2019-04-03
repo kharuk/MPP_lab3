@@ -40,7 +40,6 @@ app.listen(8080, () => {
             status: 401,
             message: "Unauthorized"
         }));
-      //console.log(err);
       return next({message: "Unauthorized", status: 401});
     } 
     next();
@@ -64,6 +63,7 @@ app.listen(8080, () => {
     filmServices.showFilm(id, socket);
   });
 
+
   socket.on("create cinema", cinema => {
     cinemaServices.createCinema(cinema, socket);
   });
@@ -80,6 +80,7 @@ app.listen(8080, () => {
     cinemaServices.showCinema(id, socket);
   });
 
+
   socket.on("create session", session => {
     sessionServices.createSession(session, socket);
   });
@@ -87,7 +88,6 @@ app.listen(8080, () => {
     sessionServices.deleteSession(id, socket);
   });
   socket.on("get sessions", () => {
-    console.log('here');
     sessionServices.getSessions(socket);
   });
   socket.on("update session",(id, data) => {

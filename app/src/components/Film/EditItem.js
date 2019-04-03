@@ -4,9 +4,10 @@ import { Link, Redirect} from 'react-router-dom';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
 import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
+import { withRouter } from 'react-router'
 let socket = io(`http://localhost:8000`);
 
-export default class EditItem extends Component {
+class EditItem extends Component {
   state = {
     film_name: '',
     film_description: '',
@@ -35,9 +36,9 @@ export default class EditItem extends Component {
           film_director: film.director
           });
       });
-      this.socket.on('error', function(err){
+      this.socket.on('error', (err) => {
         toastr.error(err);
-       // this.setState({ isRedirect: true });
+        this.setState({ isRedirect: true });
       });
   }
 
@@ -74,7 +75,18 @@ export default class EditItem extends Component {
     });
   }
 
+
+  delayRedirect = event => {
+    const { history: { push } } = this.props;
+    setTimeout(()=>push('/login/'), 3000);
+  }
+
+
   render() {
+    if (this.state.isFalseLogin) {
+      //return <Redirect to={'/login/'}/>
+      this.delayRedirect();
+    } 
 
     if (this.state.isRedirect) {
       return <Redirect to={'/films/'}/>
@@ -139,3 +151,5 @@ export default class EditItem extends Component {
   }
 
 }
+
+export default withRouter(EditItem)

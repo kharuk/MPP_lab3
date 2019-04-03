@@ -6,12 +6,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
 import { withRouter } from 'react-router'
-let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-let socket = io(`http://localhost:8000`,{
-    query: {
-        token: token,
-      },
-    });
+
 
 
 class SessionTable extends Component {
@@ -36,9 +31,9 @@ class SessionTable extends Component {
     this.socket.on('session recived', (sessions) => {
       this.setState({ items: sessions });
     });
-    this.socket.on('error', function(err){
+    this.socket.on('error', (err)=> {
       toastr.error(err);
-     // this.setState({ isRedirect: true });
+      this.setState({ isRedirect: true });
     });
   }
 

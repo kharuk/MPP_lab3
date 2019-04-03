@@ -4,15 +4,9 @@ import { Link, Redirect} from 'react-router-dom';
 import { ValidationForm, TextInput, SelectGroup} from "react-bootstrap4-form-validation";
 import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
-let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-let socket = io(`http://localhost:8000`,{
-    query: {
-        token: token,
-      },
-});
+import { withRouter } from 'react-router'
 
-
-export default class EditItem extends Component {
+class EditItem extends Component {
 
   state = {
     session_date: '',
@@ -46,9 +40,9 @@ export default class EditItem extends Component {
         session_cinemas: session.cinemas,
         });
     });
-    this.socket.on('error', function(err){
+    this.socket.on('error', (err) => {
       toastr.error(err);
-     // this.setState({ isRedirect: true });
+      this.setState({ isRedirect: true });
     });
   }
 
@@ -85,7 +79,18 @@ export default class EditItem extends Component {
     });
   }
 
+
+  delayRedirect = event => {
+    const { history: { push } } = this.props;
+    setTimeout(()=>push('/login/'), 3000);
+  }
+
+
   render() {
+    if (this.state.isFalseLogin) {
+      //return <Redirect to={'/login/'}/>
+      this.delayRedirect();
+    }  
 
     if (this.state.isRedirect) {
       return <Redirect to={'/sessions'}/>
@@ -158,3 +163,5 @@ export default class EditItem extends Component {
     );
   }
 }
+
+export default withRouter(EditItem);
