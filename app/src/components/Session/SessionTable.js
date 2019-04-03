@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import TableHeader from '../TableHeader';
 import TableRow from '../TableRow';
 import axios from 'axios';
+import io from 'socket.io-client';
+let socket = io(`http://localhost:8000`);
 
 class SessionTable extends Component {
 
@@ -13,7 +15,12 @@ class SessionTable extends Component {
   }
 
   componentDidMount(){
-    let token = JSON.parse(window.localStorage.getItem('user'));
+    socket.emit('get sessions');
+    socket.on('session recived', (sessions) => {
+      this.setState({ items: sessions });
+    });
+
+/*     let token = JSON.parse(window.localStorage.getItem('user'));
     var headers = { Authorization: token.data.token };
     axios.get(`http://localhost:8080/sessions/`, { headers: headers})
       .then(response => {
@@ -23,7 +30,7 @@ class SessionTable extends Component {
       .catch((error) => {
         console.log(error);
       })
-      console.log(this.state.items);
+      console.log(this.state.items); */
   }
 
   tabRow = () => {

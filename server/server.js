@@ -60,6 +60,25 @@ io.on("connection", function(socket) {
     cinemaServices.showCinema(id, socket);
   });
 
+  socket.on("create session", session => {
+    sessionServices.createSession(session, socket);
+  });
+  socket.on("delete session", id => {
+    sessionServices.deleteSession(id, socket);
+  });
+  socket.on("get sessions", () => {
+    sessionServices.getSessions(socket);
+  });
+  socket.on("update session",(id, data) => {
+    sessionServices.updateSession(id, data, socket);
+  });
+  socket.on("show session",(id) => {
+    sessionServices.showSession(id, socket);
+  });
+  socket.on("befor add session",() => {
+    sessionServices.addNewSession(socket);
+  });
+
 
 });
 

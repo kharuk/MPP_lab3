@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Link, Redirect} from 'react-router-dom';
 import { ValidationForm, TextInput, SelectGroup} from "react-bootstrap4-form-validation";
+import io from 'socket.io-client';
+let socket = io(`http://localhost:8000`);
+
 
 export default class EditItem extends Component {
 
@@ -15,19 +18,18 @@ export default class EditItem extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/sessions/edit/'+this.props.match.params.id)
-    .then(response => {
-        this.setState({ 
-          session_date: response.data.session.date,
-          session_film_id: response.data.session.Film_Id,
-          session_cinema_id: response.data.session.Cinema_Id,
-          session_films: response.data.films,
-          session_cinemas: response.data.cinemas,
-          });
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
+    let id = this.props.match.params.id;
+    socket.emit('show session', (id));
+
+    socket.on('session shown', (session) => {
+      this.setState({ 
+        session_date: session.session.date,
+        session_film_id: session.session.Film_Id,
+        session_cinema_id: session.session.Cinema_Id,
+        session_films: session.films,
+        session_cinemas: session.cinemas,
+        });
+    });
   }
 
   onSubmit = (e) => {
@@ -37,16 +39,12 @@ export default class EditItem extends Component {
       Film_Id: this.state.session_film_id,
       Cinema_Id: this.state.session_cinema_id
     };
-    axios.put('http://localhost:8080/sessions/edit/'+this.props.match.params.id, obj)
-        .then(res => console.log(res.data))
-        .then(()=> {
-          this.setState({ 
-            isRedirect: true
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-      })
+    let id = this.props.match.params.id
+    console.log(id, obj);
+    socket.emit('update session', id, obj);
+    this.setState({ 
+      isRedirect: true
+    });
   }
 
   onChangeDate = (e) => {
@@ -70,7 +68,7 @@ export default class EditItem extends Component {
   render() {
 
     if (this.state.isRedirect) {
-      return <Redirect to={'/sessionss/'}/>
+      return <Redirect to={'/sessions'}/>
     }
     
     return (

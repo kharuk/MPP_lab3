@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Link, Redirect} from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput, SelectGroup} from "react-bootstrap4-form-validation";
+import io from 'socket.io-client';
+let socket = io(`http://localhost:8000`);
 
 class CreateItem extends Component {
   state = {
@@ -14,16 +16,13 @@ class CreateItem extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/sessions/new/')
-    .then(response => {
-        this.setState({ 
-          session_films: response.data.films,
-          session_cinemas: response.data.cinemas,
-          });
-    })
-    .catch(function (error) {
-        console.log(error);
-    })
+    socket.emit('befor add session');
+    socket.on('options recived', (data) => {
+      this.setState({ 
+        session_films: data.films,
+        session_cinemas: data.cinemas,
+        });
+    });
   }
 
   onSubmit = (e) => {
@@ -33,21 +32,16 @@ class CreateItem extends Component {
       Film_Id: this.state.session_film_id,
       Cinema_Id: this.state.session_cinema_id
     };
+    socket.emit('create session', obj)
+    this.setState({
+      session_date: '',
+      session_films: [],
+      session_cinemas:[],
+      session_film_id: 0,
+      session_cinema_id: 0,
+      isRedirect: true
+    })
     console.log(obj);
-    axios.post('http://localhost:8080/sessions/new', obj)
-        .then(res => console.log(res.data))
-        .then(()=> {
-          this.setState({
-            session_date: '',
-            session_films: [],
-            session_cinemas:[],
-            session_film_id: 0,
-            session_cinema_id: 0,
-            isRedirect: true
-          })
-        });
-
-
   }
 
   onChangeDate = (e) => {
