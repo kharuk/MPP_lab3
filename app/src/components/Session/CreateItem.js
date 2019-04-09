@@ -14,7 +14,9 @@ class CreateItem extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/sessions/new/')
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.get('http://localhost:8080/sessions/new/',  { headers: headers})
     .then(response => {
         this.setState({ 
           session_films: response.data.films,
@@ -34,7 +36,9 @@ class CreateItem extends Component {
       Cinema_Id: this.state.session_cinema_id
     };
     console.log(obj);
-    axios.post('http://localhost:8080/sessions/new', obj)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.post('http://localhost:8080/sessions/new', obj, { headers: headers})
         .then(res => console.log(res.data))
         .then(()=> {
           this.setState({

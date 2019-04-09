@@ -15,7 +15,9 @@ export default class EditItem extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/sessions/edit/'+this.props.match.params.id)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.get('http://localhost:8080/sessions/edit/'+this.props.match.params.id, { headers: headers})
     .then(response => {
         this.setState({ 
           session_date: response.data.session.date,
@@ -37,7 +39,9 @@ export default class EditItem extends Component {
       Film_Id: this.state.session_film_id,
       Cinema_Id: this.state.session_cinema_id
     };
-    axios.put('http://localhost:8080/sessions/edit/'+this.props.match.params.id, obj)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.put('http://localhost:8080/sessions/edit/'+this.props.match.params.id, obj, { headers: headers})
         .then(res => console.log(res.data))
         .then(()=> {
           this.setState({ 
@@ -70,7 +74,7 @@ export default class EditItem extends Component {
   render() {
 
     if (this.state.isRedirect) {
-      return <Redirect to={'/sessionss/'}/>
+      return <Redirect to={'/sessions/'}/>
     }
     
     return (

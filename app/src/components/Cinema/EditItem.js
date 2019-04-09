@@ -12,7 +12,9 @@ class CreateItem extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/cinemas/edit/'+this.props.match.params.id)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.get('http://localhost:8080/cinemas/edit/'+this.props.match.params.id, { headers: headers})
       .then(response => {
           this.setState({ 
             cinema_name: response.data.name,
@@ -32,7 +34,9 @@ class CreateItem extends Component {
       phone: this.state.cinema_phone,
       address: this.state.cinema_address
     };
-    axios.put('http://localhost:8080/cinemas/edit/'+this.props.match.params.id, obj)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.put('http://localhost:8080/cinemas/edit/'+this.props.match.params.id, obj,{ headers: headers})
         .then(res => console.log(res.data))
         .then(()=> {
           this.setState({ 

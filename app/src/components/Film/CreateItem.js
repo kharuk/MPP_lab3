@@ -17,7 +17,9 @@ class CreateItem extends Component {
       description: this.state.film_description,
       director: this.state.film_director
     };
-    axios.post('http://localhost:8080/films/new', obj)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.post('http://localhost:8080/films/new', obj, { headers: headers})
         .then(res => console.log(res.data))
         .then(()=> {
           this.setState({

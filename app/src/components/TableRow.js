@@ -10,7 +10,9 @@ class Table extends Component {
   }
 
   delete = () => {
-    axios.delete(`http://localhost:8080/${this.props.path}/delete/${this.props.obj.id}`)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.delete(`http://localhost:8080/${this.props.path}/delete/${this.props.obj.id}`, { headers: headers})
       .then(console.log('Deleted'))
       .then(()=> {
         this.setState({ 

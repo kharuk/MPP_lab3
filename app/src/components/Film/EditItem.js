@@ -12,7 +12,9 @@ export default class EditItem extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/films/edit/'+this.props.match.params.id)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.get('http://localhost:8080/films/edit/'+this.props.match.params.id, { headers: headers})
       .then(response => {
           this.setState({ 
             film_name: response.data.name,
@@ -32,7 +34,9 @@ export default class EditItem extends Component {
       description: this.state.film_description,
       director: this.state.film_director
     };
-    axios.put('http://localhost:8080/films/edit/'+this.props.match.params.id, obj)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.put('http://localhost:8080/films/edit/'+this.props.match.params.id, obj, { headers: headers})
         .then(res => console.log(res.data))
         .then(()=> {
           this.setState({ 

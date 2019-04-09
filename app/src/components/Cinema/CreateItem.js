@@ -19,7 +19,9 @@ class CreateItem extends Component {
       phone: this.state.cinema_phone,
       address: this.state.cinema_address
     };
-    axios.post('http://localhost:8080/cinemas/new', obj)
+    let token = JSON.parse(window.localStorage.getItem('user'));
+    var headers = { Authorization: token.data.token };
+    axios.post('http://localhost:8080/cinemas/new', obj, { headers: headers})
         .then(res => console.log(res.data))
         .then( () => {
           this.setState({
