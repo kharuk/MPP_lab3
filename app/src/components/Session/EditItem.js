@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Link, Redirect} from 'react-router-dom';
 import { ValidationForm, TextInput, SelectGroup} from "react-bootstrap4-form-validation";
-import io from 'socket.io-client';
+import api from '../../api/api';
 import { toastr } from 'react-redux-toastr';
 import { withRouter } from 'react-router'
 
@@ -17,48 +17,43 @@ class EditItem extends Component {
     isRedirect: false
   }
 
-  constructor(props){
-    super(props);
-    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-    this.socket = io(`http://localhost:8000`,{
-        query: {
-            token: token,
-          },
-        });
-  }
-
   componentDidMount() {
     let id = this.props.match.params.id;
-    this.socket.emit('show session', (id));
-
-    this.socket.on('session shown', (session) => {
+    api
+    .fetchSession(id)
+    .then((res) => {
+      console.log(res);
       this.setState({ 
-        session_date: session.session.date,
-        session_film_id: session.session.Film_Id,
-        session_cinema_id: session.session.Cinema_Id,
-        session_films: session.films,
-        session_cinemas: session.cinemas,
+        session_date: res.showSession.session.date,
+        session_film_id: res.showSession.session.Film_Id,
+        session_cinema_id: res.showSession.session.Cinema_Id,
+        session_films: res.showSession.films,
+        session_cinemas: res.showSession.cinemas,
         });
-    });
-    this.socket.on('error', (err) => {
-      toastr.error(err);
-      this.setState({ isRedirect: true });
-    });
+    })
+    .catch((err) => {
+      console.log(err);
+     // this.setState({ isRedirect: true });
+    });  
   }
 
   onSubmit = (e) => {
     e.preventDefault();
     const obj = {
       date: this.state.session_date,
-      Film_Id: this.state.session_film_id,
-      Cinema_Id: this.state.session_cinema_id
+      Film_Id: +this.state.session_film_id,
+      Cinema_Id: +this.state.session_cinema_id
     };
     let id = this.props.match.params.id
-    console.log(id, obj);
-    this.socket.emit('update session', id, obj);
-    this.setState({ 
-      isRedirect: true
-    });
+
+    api
+      .editSession(id, obj)
+      .then((res) => {
+        this.setState({ 
+          isRedirect: true
+        });
+      })
+      .catch((err) => console.log(err)); 
   }
 
   onChangeDate = (e) => {

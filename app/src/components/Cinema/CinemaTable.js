@@ -2,28 +2,27 @@ import React, { Component } from 'react';
 import TableHeader from '../TableHeader';
 import TableRow from '../TableRow';
 import { toastr } from 'react-redux-toastr';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router';
+import api from '../../api/api';
 
 class CinemaTable extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      items: []
-    };
-    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-  }
+  state = {
+    items: []
+  };
 
   componentDidMount(){
-/*     console.log('here');
-    this.socket.emit('get cinemas');
-    this.socket.on('cinema recived', (cinemas) => {
-      this.setState({ items: cinemas });
-    });
-    this.socket.on('error', (err)=> {
-      toastr.error(err);
-      this.setState({ isRedirect: true });
-    }); */
+    api
+      .fetchCinemas()
+      .then((res) => {
+        const cinemas = res.getCinemas;
+        this.setState({ items: cinemas });
+      })
+      .catch((err) => {
+        console.log(err);
+
+        this.setState({ isRedirect: true });
+      });
   }
 
   tabRow = () => {

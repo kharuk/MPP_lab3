@@ -7,14 +7,23 @@ export default {
   fetchFilms,
   deleteFilm,
   editFilm,
-  validateUser,
+  fetchFilm,
+  createCinema,
+  fetchCinemas,
+  deleteCinema,
+  editCinema,
+  fetchCinema,
+  createSession,
+  fetchSessions,
+  deleteSession,
+  editSession,
+  fetchSession,
+  fetchSessionOptions
+/*   validateUser,
   registerUser,
   login,
-  logout,
-  fetchFilm
+  logout, */
 };
-
-
 
 const handleResponse = (response) => { 
   console.log('response', response)
@@ -29,10 +38,12 @@ const handleResponse = (response) => {
 const handleError = (err) => {
   console.log('err', err);
   toastr.error(`${err}`);
+  console.log(err);
   return Promise.reject(err);
 };
 
 async function createFilm(data) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
   const requestBody = {
     query: graphqlQueries.CREATE_FILM,
     variables: {
@@ -45,7 +56,8 @@ async function createFilm(data) {
     method: 'POST',
     body: JSON.stringify(requestBody),
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': token
     }
   })
     .then((res) => {
@@ -78,6 +90,7 @@ function fetchFilms() {
 }
 
 function fetchFilm(id) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
   let requestBody = {
     query: graphqlQueries.FETCH_FILM,
     variables: {
@@ -88,7 +101,8 @@ function fetchFilm(id) {
     method: 'POST',
     body: JSON.stringify(requestBody),
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': token
     }
   })
     .then((res) => {
@@ -100,6 +114,7 @@ function fetchFilm(id) {
 }
 
 function deleteFilm(id) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
   console.log(id);
   const requestBody = {
     query: graphqlQueries.DELETE_FILM,
@@ -111,7 +126,8 @@ function deleteFilm(id) {
     method: 'POST',
     body: JSON.stringify(requestBody),
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': token
     }
   })
     .then((res) => {
@@ -122,6 +138,7 @@ function deleteFilm(id) {
 }
 
 function editFilm(id,data) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
   const requestBody = {
     query: graphqlQueries.UPDATE_FILM,
     variables: {
@@ -133,7 +150,8 @@ function editFilm(id,data) {
     method: 'POST',
     body: JSON.stringify(requestBody),
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': token
     }
   })
     .then((res) => {
@@ -143,7 +161,272 @@ function editFilm(id,data) {
     .catch(handleError);
 }
 
-function login(data) {
+//CINEMA
+
+
+
+async function createCinema(data) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  const requestBody = {
+    query: graphqlQueries.CREATE_CINEMA,
+    variables: {
+      name: data.name,
+      phone: data.phone,
+      address: data.address,
+    }
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+function fetchCinemas() {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  let requestBody = {
+    query: graphqlQueries.FETCH_CINEMAS
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      console.log('res', res);
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+function fetchCinema(id) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  let requestBody = {
+    query: graphqlQueries.FETCH_CINEMA,
+    variables: {
+      id: id
+    }
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      console.log('res', res);
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+function deleteCinema(id) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  console.log(id);
+  const requestBody = {
+    query: graphqlQueries.DELETE_CINEMA,
+    variables: {
+      id: id
+    }
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+function editCinema(id,data) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  const requestBody = {
+    query: graphqlQueries.UPDATE_CINEMA,
+    variables: {
+      id,
+     ...data
+    }
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+
+
+//SESSIONS
+
+async function createSession(data) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  const requestBody = {
+    query: graphqlQueries.CREATE_SESSION,
+    variables: {
+      date: data.date,
+      Film_Id: data.Film_Id,
+      Cinema_Id: data.Cinema_Id,
+    }
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+function fetchSessions() {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  let requestBody = {
+    query: graphqlQueries.FETCH_SESSIONS
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      console.log('res', res);
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+function fetchSession(id) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  let requestBody = {
+    query: graphqlQueries.FETCH_SESSION,
+    variables: {
+      id: id
+    }
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      console.log('res', res);
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+function deleteSession(id) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  console.log(id);
+  const requestBody = {
+    query: graphqlQueries.DELETE_SESSION,
+    variables: {
+      id: id
+    }
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+function editSession(id,data) {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  const requestBody = {
+    query: graphqlQueries.UPDATE_SESSION,
+    variables: {
+      id,
+     ...data
+    }
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+function fetchSessionOptions() {
+  let token = JSON.parse(window.localStorage.getItem('user')).data.token;
+  const requestBody = {
+    query: graphqlQueries.FETCH_OPTIONS,
+  };
+  return fetch('http://localhost:8080/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  })
+    .then((res) => {
+      console.log('res', res)
+      return res.json();
+    })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
+/* function login(data) {
   let requestBody = {
     query: graphqlQueries.LOGIN,
     variables: {
@@ -212,3 +495,4 @@ function validateUser(email) {
     .then(handleResponse)
     .catch(handleError);
 }
+ */

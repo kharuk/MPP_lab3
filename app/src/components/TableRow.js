@@ -25,6 +25,24 @@ class Table extends Component {
         });
       })
       .catch((err) => console.log(err)); 
+    } else if (name === 'session') {
+      api
+      .deleteSession(id)
+      .then(() => {
+        this.setState({ 
+          isRedirect: true
+        });
+      })
+      .catch((err) => console.log(err)); 
+    } else if (name === 'cinema') {
+      api
+      .deleteCinema(id)
+      .then(() => {
+        this.setState({ 
+          isRedirect: true
+        });
+      })
+      .catch((err) => console.log(err)); 
     }
 
 

@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { Link, Redirect} from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput, SelectGroup} from "react-bootstrap4-form-validation";
-import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
 import { withRouter } from 'react-router'
-
+import api from '../../api/api';
 
 class CreateItem extends Component {
   state = {
@@ -16,48 +15,44 @@ class CreateItem extends Component {
     session_cinema_id: 0,
     isRedirect: false
   }
-  constructor(props){
-    super(props);
-    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-    this.socket = io(`http://localhost:8000`,{
-        query: {
-            token: token,
-          },
-        });
-  }
 
-  componentDidMount() {
-    this.socket.emit('befor add session');
-    this.socket.on('options recived', (data) => {
+  componentDidMount() {   
+    api
+    .fetchSessionOptions()
+    .then((data) => {
+      console.log(data);
       this.setState({ 
-        session_films: data.films,
-        session_cinemas: data.cinemas,
-        });
-    });
-    this.socket.on('error', (err) => {
-      toastr.error(err);
-      this.setState({ isFalseLogin: true });
-    });
-
+        session_films: data.getOptions.films,
+        session_cinemas: data.getOptions.cinemas,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+     // this.setState({ isFalseLogin: true });
+    });  
   }
 
   onSubmit = (e) => {
     e.preventDefault();
     const obj = {
       date: this.state.session_date,
-      Film_Id: this.state.session_film_id,
-      Cinema_Id: this.state.session_cinema_id
+      Film_Id: +this.state.session_film_id,
+      Cinema_Id: +this.state.session_cinema_id
     };
-    this.socket.emit('create session', obj)
-    this.setState({
-      session_date: '',
-      session_films: [],
-      session_cinemas:[],
-      session_film_id: 0,
-      session_cinema_id: 0,
-      isRedirect: true
-    })
     console.log(obj);
+    api
+    .createSession(obj)
+    .then(() => {
+      this.setState({
+        session_date: '',
+        session_films: [],
+        session_cinemas:[],
+        session_film_id: 0,
+        session_cinema_id: 0,
+        isRedirect: true
+      }) 
+    })
+    .catch((err) => console.log(err));  
   }
 
   onChangeDate = (e) => {

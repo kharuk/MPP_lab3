@@ -1,46 +1,64 @@
 const Cinema  = require('../models/cinema');
+const VerifyToken = require('../middleware/verifyToken');
+const {ApolloError} = require('apollo-server');
 
-function getCinemas(socket) {
-  Cinema.findAll()
-  .then(cinemas => {
-    console.log("cinema recived");
-    socket.emit('cinema recived',cinemas);
-    socket.broadcast.emit('cinema recived',cinemas);
-  })
-  .catch(err => console.log(err));
+async function getCinemas(data,context) {
+  VerifyToken(context);
+  try {
+    const cinemas = await Cinema.findAll();
+    return cinemas;
+  } catch (err) {
+    throw new ApolloError(err);
+  }
 }
 
-function createCinema(cinema,socket) {
-  Cinema.create(cinema)
-  .then((cinema) => {
-    console.log("cinema created");
-  })
-  .catch(err => console.log(err));
+async function createCinema(args,context) {
+  VerifyToken(context);
+ console.log(args)
+  try {
+    const result = await Cinema.create(args.cinemaInput)
+    console.log('result', result.dataValues);
+    return result.dataValues;
+  } catch (err) {
+    console.log(err);
+    throw new ApolloError(err);
+  }
 }
 
-function showCinema(id, socket) {
-  Cinema.findById(id)
-  .then((cinema) => {
-    console.log("cinema shown");
-    socket.emit('cinema shown',cinema);
-    socket.broadcast.emit('cinema shown',cinema);
-  })
-  .catch(err => console.log(err)); 
+async function showCinema({id},context) {
+  VerifyToken(context);
+  try {
+    const cinema = await Cinema.findById(id);
+    return cinema;
+  }
+  catch (err) {
+    throw new ApolloError(err);
+  } 
 }
 
-function updateCinema(id,data,socket) {
-  Cinema.update(data, {where: { id: id }})
-  .then((cinema) => {
-    console.log("cinema updated",cinema);
-  })
-  .catch(err => console.log(err));
+async function updateCinema(args,context) {
+  VerifyToken(context);
+ console.log(args);
+  const {id, ...data} = args;
+  try {
+    const cinema = await Cinema.update(data, {where: { id: id }});
+    console.log('result', cinema.dataValues);
+    return cinema.dataValues;
+  } catch (err) {
+    console.log(err);
+    throw new ApolloError(err);
+  }
 }
 
-function deleteCinema(id,socket) {
-  Cinema.destroy({where: {id: id}})
-  .then((cinema) => {
-    console.log("cinema deleted");
-  });
+async function deleteCinema({id},context) {
+  VerifyToken(context);
+  try {
+    const cinema = await Cinema.destroy({where: {id: id}});
+    return {id : cinema.id};
+  }
+  catch (err) {
+    throw new ApolloError(err);
+  }
 }
 
 module.exports = {

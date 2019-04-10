@@ -26,7 +26,7 @@ async function createFilm(args,context) {
 }
 
 async function showFilm({id},context) {
-  //VerifyToken(context);
+  VerifyToken(context);
   try {
     const film = await Film.findById(id);
     return film;
@@ -37,7 +37,7 @@ async function showFilm({id},context) {
 }
 
 async function updateFilm(args,context) {
- // VerifyToken(context);
+  VerifyToken(context);
  console.log(args);
   const {id, ...data} = args;
   try {
@@ -51,7 +51,7 @@ async function updateFilm(args,context) {
 }
 
 async function deleteFilm({id},context) {
-  //VerifyToken(context);
+  VerifyToken(context);
   try {
     const film = await Film.destroy({where: {id: id}});
     console.log(film)

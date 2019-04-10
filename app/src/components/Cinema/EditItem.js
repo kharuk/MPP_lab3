@@ -3,7 +3,8 @@ import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
 import { toastr } from 'react-redux-toastr';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router';
+import api from '../../api/api';
 
 class EditItem extends Component {
   state = {
@@ -18,19 +19,19 @@ class EditItem extends Component {
   componentDidMount() {
 
     let id = this.props.match.params.id;
-    this.socket.emit('show cinema', (id));
-
-    this.socket.on('cinema shown', (cinema) => {
+    api
+    .fetchCinema(id)
+    .then((res) => {
       this.setState({ 
-        cinema_name: cinema.name,
-        cinema_phone: cinema.phone,
-        cinema_address: cinema.address
-        });
-    });
-    this.socket.on('error', (err) => {
-      toastr.error(err);
+        cinema_name: res.showCinema.name,
+        cinema_phone: res.showCinema.phone,
+        cinema_address: res.showCinema.address
+      });
+    })
+    .catch((err) => {
+      console.log(err);
       this.setState({ isRedirect: true });
-    });
+    }); 
   }
 
   onSubmit = (e) => {
@@ -41,10 +42,15 @@ class EditItem extends Component {
       address: this.state.cinema_address
     };
     let id = this.props.match.params.id
-    this.socket.emit('update cinema', id, obj);
-    this.setState({ 
-      isRedirect: true
-    });
+
+    api
+      .editCinema(id, obj)
+      .then((res) => {
+        this.setState({ 
+          isRedirect: true
+        });
+      })
+      .catch((err) => console.log(err)); 
   }
   
   onChangeName = (e) => {

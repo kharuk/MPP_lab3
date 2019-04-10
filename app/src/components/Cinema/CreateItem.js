@@ -3,7 +3,9 @@ import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
 import { toastr } from 'react-redux-toastr';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router';
+import api from '../../api/api';
+
 class CreateItem extends Component {
 
   state = {
@@ -13,12 +15,7 @@ class CreateItem extends Component {
     isRedirect: false
   }
 
-  componentDidMount() {
-    this.socket.on('error', (err) => {
-      toastr.error(err);
-      this.setState({ isFalseLogin: true });
-    });
-  }
+
 
   onSubmit = (e) => {
     e.preventDefault();
@@ -28,13 +25,18 @@ class CreateItem extends Component {
       phone: this.state.cinema_phone,
       address: this.state.cinema_address
     };
-    this.socket.emit('create cinema', obj)
-    this.setState({
-      cinema_name: '',
-      cinema_phone: '',
-      cinema_address:'',
-      isRedirect: true
-    })
+
+    api
+      .createCinema(obj)
+      .then(() => {
+        this.setState({
+          cinema_name: '',
+          cinema_phone: '',
+          cinema_address:'',
+          isRedirect: true
+        })
+      })
+      .catch((err) => console.log(err));  
   }
 
   onChangeName = (e) => {

@@ -3,38 +3,29 @@ import TableHeader from '../TableHeader';
 import TableRow from '../TableRow';
 import { Redirect} from 'react-router-dom';
 import axios from 'axios';
-import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
 import { withRouter } from 'react-router'
+import api from '../../api/api';
 
 
 
 class SessionTable extends Component {
-
-  constructor(props){
-    super(props);
-    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-    this.socket = io(`http://localhost:8000`,{
-        query: {
-            token: token,
-          },
-        });
-
-    this.state = {
-      items: [],
-      isRedirect: false
-    };
-  }
+  state = {
+    items: [],
+    isRedirect: false
+  };
 
   componentDidMount(){
-    this.socket.emit('get sessions');
-    this.socket.on('session recived', (sessions) => {
-      this.setState({ items: sessions });
-    });
-    this.socket.on('error', (err)=> {
-      toastr.error(err);
-      this.setState({ isRedirect: true });
-    });
+    api
+      .fetchSessions()
+      .then((res) => {
+        const sessions = res.getSessions;
+        this.setState({ items: sessions });
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ isRedirect: true });
+      });
   }
 
   tabRow = () => {
