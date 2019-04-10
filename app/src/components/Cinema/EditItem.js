@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
-import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
 import { withRouter } from 'react-router'
-let socket = io(`http://localhost:8000`);
 
 class EditItem extends Component {
   state = {
@@ -15,15 +13,7 @@ class EditItem extends Component {
     isRedirect: false
   }
 
-  constructor(props){
-    super(props);
-    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-    this.socket = io(`http://localhost:8000`,{
-      query: {
-          token: token,
-        },
-      });
-  }
+
 
   componentDidMount() {
 

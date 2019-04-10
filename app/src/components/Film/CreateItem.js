@@ -4,34 +4,17 @@ import axios from 'axios';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
 import { toastr } from 'react-redux-toastr';
 import { withRouter } from 'react-router'
-import io from 'socket.io-client';
+import api from '../../api/api';
 
 class CreateItem extends Component {
   state = {
     film_name: '',
     film_description: '',
     film_director:'',
-    isRedirect: false
+    isRedirect: false,
+    items: [],
+    isFalseLogin: false
   }
-
-  constructor(props){
-    super(props);
-    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-    this.socket = io(`http://localhost:8000`,{
-    query: {
-        token: token,
-      },
-    });
-
-  }
-
-  componentDidMount() {
-    this.socket.on('error', (err) => {
-      toastr.error(err);
-      this.setState({ isFalseLogin: true });
-    });
-  }
-
 
   onSubmit = (e) => {
     e.preventDefault();
@@ -40,13 +23,17 @@ class CreateItem extends Component {
       description: this.state.film_description,
       director: this.state.film_director
     };
-    this.socket.emit('create film', obj)
-    this.setState({
-      film_name: '',
-      film_description: '',
-      film_director:'',
-      isRedirect: true
-    })  
+    api
+      .createFilm(obj)
+      .then(() => {
+        this.setState({
+          film_name: '',
+          film_description: '',
+          film_director:'',
+          isRedirect: true
+        }) 
+      })
+      .catch((err) => console.log(err));  
   }
 
   onChangeName = (e) => {

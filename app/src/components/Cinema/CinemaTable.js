@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import TableHeader from '../TableHeader';
 import TableRow from '../TableRow';
-import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
 import { withRouter } from 'react-router'
-let socket = io(`http://localhost:8000`);
 
 class CinemaTable extends Component {
 
@@ -14,15 +12,10 @@ class CinemaTable extends Component {
       items: []
     };
     let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-    this.socket = io(`http://localhost:8000`,{
-    query: {
-        token: token,
-      },
-    });
   }
 
   componentDidMount(){
-    console.log('here');
+/*     console.log('here');
     this.socket.emit('get cinemas');
     this.socket.on('cinema recived', (cinemas) => {
       this.setState({ items: cinemas });
@@ -30,7 +23,7 @@ class CinemaTable extends Component {
     this.socket.on('error', (err)=> {
       toastr.error(err);
       this.setState({ isRedirect: true });
-    });
+    }); */
   }
 
   tabRow = () => {

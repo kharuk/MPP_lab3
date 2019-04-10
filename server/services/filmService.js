@@ -1,55 +1,65 @@
 const Film  = require('../models/film');
+const VerifyToken = require('../middleware/verifyToken');
+const {ApolloError} = require('apollo-server');
 
-function getFilms(socket) {
-  Film.findAll()
-  .then(films => {
-    console.log("film recived");
-    socket.emit('film recived',films);
-    socket.broadcast.emit('film recived',films);
-  })
-  .catch(err => console.log(err));
+async function getFilms(data,context) {
+  VerifyToken(context);
+  try {
+    const films = await Film.findAll();
+    return films;
+  } catch (err) {
+    throw new ApolloError(err);
+  }
 }
 
-function createFilm(film,socket) {
-  Film.create(film)
-  .then((film) => {
-    console.log("film created");
-  //  socket.emit('film created',film);
-  //  socket.broadcast.emit('task created',film);
-    //res.redirect('/films');
-  })
-  .catch(err => console.log(err));
+async function createFilm(args,context) {
+  VerifyToken(context);
+ console.log(args)
+  try {
+    const result = await Film.create(args.filmInput)
+    console.log('result', result.dataValues);
+    return result.dataValues;
+  } catch (err) {
+    console.log(err);
+    throw new ApolloError(err);
+  }
 }
 
-function showFilm(id, socket) {
-   Film.findById(id)
-  .then((film) => {
-    console.log("film shown");
-    socket.emit('film shown',film);
-    socket.broadcast.emit('film shown',film);
-  })
-  .catch(err => console.log(err)); 
+async function showFilm({id},context) {
+  //VerifyToken(context);
+  try {
+    const film = await Film.findById(id);
+    return film;
+  }
+  catch (err) {
+    throw new ApolloError(err);
+  }
 }
 
-function updateFilm(id,data,socket) {
-  console.log(data);
-  Film.update(data, {where: { id: id }})
-  .then((film) => {
-    console.log("film updated",film);
-  //  socket.emit('film updated',film);
-  //  socket.broadcast.emit('film updated',film);
-   // res.redirect("/films");
-  })
-  .catch(err => console.log(err));
+async function updateFilm(args,context) {
+ // VerifyToken(context);
+ console.log(args);
+  const {id, ...data} = args;
+  try {
+    const film = await Film.update(data, {where: { id: id }});
+    console.log('result', film.dataValues);
+    return film.dataValues;
+  } catch (err) {
+    console.log(err);
+    throw new ApolloError(err);
+  }
 }
 
-function deleteFilm(id,socket) {
-  Film.destroy({where: {id: id}})
-  .then((film) => {
-    console.log("film deleted");
-  //  socket.emit('film deleted',film.id);
-  //  socket.broadcast.emit('film deleted',film.id);
-  });
+async function deleteFilm({id},context) {
+  //VerifyToken(context);
+  try {
+    const film = await Film.destroy({where: {id: id}});
+    console.log(film)
+    return {id : film.id};
+  }
+  catch (err) {
+    throw new ApolloError(err);
+  }
 }
 
 module.exports = {
@@ -59,17 +69,3 @@ module.exports = {
   updateFilm,
   deleteFilm
 };
-
-
-
-
-
-
-// Defined edit route
-
-
-//  Defined update route
-
-
-// Defined delete | remove | destroy route
-

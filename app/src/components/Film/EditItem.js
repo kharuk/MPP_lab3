@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Link, Redirect} from 'react-router-dom';
 import { ValidationForm, TextInput} from "react-bootstrap4-form-validation"; 
-import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
-import { withRouter } from 'react-router'
-let socket = io(`http://localhost:8000`);
+import { withRouter } from 'react-router';
+import api from '../../api/api';
+
 
 class EditItem extends Component {
   state = {
@@ -15,31 +15,25 @@ class EditItem extends Component {
     isRedirect: false
   }
 
-  constructor(props){
-    super(props);
-    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-    this.socket = io(`http://localhost:8000`,{
-    query: {
-        token: token,
-      },
-    });
-  }
 
   componentDidMount() {
       let id = this.props.match.params.id;
-      this.socket.emit('show film', (id));
-
-      this.socket.on('film shown', (film) => {
-        this.setState({ 
-          film_name: film.name,
-          film_description: film.description,
-          film_director: film.director
-          });
-      });
+      api
+      .fetchFilm(id)
+      .then((res) => {
+        console.log(res);
+        this.setState({
+          film_name: res.showFilm.name,
+          film_description: res.showFilm.description,
+          film_director: res.showFilm.director,
+        }) 
+      })
+      .catch((err) => console.log(err));  
+/*
       this.socket.on('error', (err) => {
         toastr.error(err);
         this.setState({ isRedirect: true });
-      });
+      }); */
   }
 
   onSubmit = (e) => {
@@ -50,11 +44,15 @@ class EditItem extends Component {
       director: this.state.film_director
     };
     let id = this.props.match.params.id
-    console.log(id, obj);
-    this.socket.emit('update film', id, obj);
-    this.setState({ 
-      isRedirect: true
-    });
+
+    api
+      .editFilm(id, obj)
+      .then((res) => {
+        this.setState({ 
+          isRedirect: true
+        });
+      })
+      .catch((err) => console.log(err)); 
   }
 
   onChangeName = (e) => {

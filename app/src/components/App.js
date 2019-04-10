@@ -16,9 +16,7 @@ import { connect } from 'react-redux';
 import { PrivateRoute } from './PrivateRouter';
 import { alertActions } from '../actions';
 import  Login  from './Authentication/Login';
-import io from 'socket.io-client';
 import ReduxToastr from 'react-redux-toastr'
-let socket = io(`http://localhost:8000`);
 
 class App extends Component {
   constructor(props) {
@@ -62,7 +60,7 @@ class App extends Component {
               header={this.state.header.filmList}
               headerItems={this.state.items.filmList}
               createPath='films'
-              socket={socket}
+               
               /* render={(props) => <Main 
                 {...props} 
                 header={this.state.header.filmList}
@@ -76,7 +74,7 @@ class App extends Component {
               header={this.state.header.cinemaList}
               headerItems={this.state.items.cinemaList}
               createPath='cinemas'
-              socket={socket}
+               
             />
             <PrivateRoute 
               exact path="/sessions" 
@@ -85,37 +83,37 @@ class App extends Component {
               header={this.state.header.sessionList}
               headerItems={this.state.items.sessionList}
               createPath='sessions'
-              socket={socket}
+               
             />
             <PrivateRoute
               exact path={`/films/new`} 
               component={CreateItem}
-              socket={socket}
+               
             />
             <PrivateRoute
               exact path={`/films/:id/edit`} 
               component={EditItem}
-              socket={socket}
+               
             />
             <PrivateRoute
               exact path={`/cinemas/new`} 
               component={CreateItemCinema}
-              socket={socket}
+               
             />
             <PrivateRoute
               exact path={`/cinemas/:id/edit`} 
               component={EditItemCinema}
-              socket={socket}
+               
             />
             <PrivateRoute
               exact path={`/sessions/new`} 
               component={CreateItemSession}
-              socket={socket}
+               
             />
             <PrivateRoute
               exact path={`/sessions/:id/edit`} 
               component={EditItemSession}
-              socket={socket}
+               
             />
           </Switch>
         </div>

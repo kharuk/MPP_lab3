@@ -1,38 +1,29 @@
 import React, { Component } from 'react';
 import TableHeader from '../TableHeader';
 import TableRow from '../TableRow';
-import io from 'socket.io-client';
 import { toastr } from 'react-redux-toastr';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router';
+import api from '../../api/api';
 
 
 class FilmTable extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      items: []
-    };
-    let token = JSON.parse(window.localStorage.getItem('user')).data.token;
-    this.socket = io(`http://localhost:8000`,{
-    query: {
-        token: token,
-      },
-    });
-  }
-
-
+  state = {
+    items: []
+  };
 
   componentDidMount(){
-    console.log('here');
-    this.socket.emit('get films');
-    this.socket.on('film recived', (films) => {
-      this.setState({ items: films });
-    });
-    this.socket.on('error', (err) => {
-      toastr.error(err);
-      this.setState({ isRedirect: true });
-    });
+    api
+      .fetchFilms()
+      .then((res) => {
+        const films = res.getFilms;
+        this.setState({ items: films });
+      })
+      .catch((err) => {
+        console.log(err);
+
+        this.setState({ isRedirect: true });
+      });
   }
 
   tabRow = () => {

@@ -12,11 +12,11 @@ class Main extends Component {
   renderTable = () => {
     console.log(this.props.name);
     if (this.props.createPath === 'films'){
-      return <FilmTable name={this.props.name} socket={this.props.socket} path={this.props.createPath} items={this.props.headerItems}/>
+      return <FilmTable name={this.props.name}  path={this.props.createPath} items={this.props.headerItems}/>
     } else if (this.props.createPath === 'cinemas'){
-      return <CinemaTable name={this.props.name} socket={this.props.socket} path={this.props.createPath} items={this.props.headerItems}/>
+      return <CinemaTable name={this.props.name} path={this.props.createPath} items={this.props.headerItems}/>
     } else if (this.props.createPath === 'sessions'){
-      return <SessionTable name={this.props.name} socket={this.props.socket} path={this.props.createPath} items={this.props.headerItems}/>
+      return <SessionTable name={this.props.name}  path={this.props.createPath} items={this.props.headerItems}/>
     }
   }
 

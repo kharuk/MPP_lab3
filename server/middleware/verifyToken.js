@@ -1,22 +1,20 @@
 let jwt = require('jsonwebtoken');
 const config = require('../config/jwtSecret');
+const {AuthenticationError} = require('apollo-server');
 
-let verifyToken = (token) => {
-  //let token = req.headers['x-access-token'] || req.headers['authorization'];
-
+let verifyToken = ({req, res}) => {
+  let token = req.headers['x-access-token'] || req.headers['authorization'];
+console.log(token);
   if(!token){
-    return false;
+    res.status(401);
+    throw new AuthenticationError('No token provided');
   }
-  console.log('token', token);
-  let isChecked = jwt.verify(token, config.secret, (err, decoded) => {
+  jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
-      console.log('err', err);
-      return false;
+      res.status(401);
+      throw new AuthenticationError('Need to login');
     } 
-    //req.userId = decoded.id;
-    return true  
   });
-  return isChecked;
 }
 
 module.exports = verifyToken;
